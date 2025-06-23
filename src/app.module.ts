@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { envValidationSchema } from './config/env.validation';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { ShorturlModule } from './shorturl/shorturl.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
   }),
   UserModule,
   AuthModule,
+  ShorturlModule,
 ],
 
   controllers: [AppController],
