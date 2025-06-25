@@ -2,8 +2,8 @@ import { Controller, Post, Body, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { UserService } from 'src/user/user.service';
-import { CreateUserDto } from 'src/user/dto/user.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from 'src/user/dto/login.dto';
 
 @ApiTags('auth')
@@ -13,6 +13,8 @@ export class AuthController {
     private authService: AuthService,
     private userService: UserService) { }
 
+  @ApiOperation({ summary: 'Auth your account'})
+  @ApiResponse({ status: 201, description: 'Generate your access_token'})
   @ApiBody({ type: LoginDto })
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -20,6 +22,8 @@ export class AuthController {
     return this.authService.signIn(req.user);
   }
 
+  @ApiOperation({ summary: 'Create a account'})
+  @ApiResponse({ status: 201, description: 'Account creation success'})
   @ApiBody({ type: CreateUserDto })
   @Post('register')
   async register(@Body() dto: CreateUserDto) {

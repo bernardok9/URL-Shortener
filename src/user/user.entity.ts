@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { ShortUrl } from 'src/shorturl/shorturl.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity()
 export class User {
@@ -10,4 +11,8 @@ export class User {
 
   @Column()
   password: string;
+
+
+  @OneToMany(() => ShortUrl, (shortUrl) => shortUrl.user)
+  shortUrls: ShortUrl[];
 }
