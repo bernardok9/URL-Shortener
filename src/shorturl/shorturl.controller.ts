@@ -26,6 +26,7 @@ import { PaginatedShortUrlDto, PaginateDto } from './dto/shorturl.dto';
 export class ShorturlController {
   constructor(private readonly shortUrlService: ShorturlService) { }
 
+  @ApiBearerAuth()
   @UseGuards(OptionalJwtAuthGuard)
   @ApiBody({ type: CreateShorturlDto })
   @ApiOperation({ summary: 'Short a url' })
