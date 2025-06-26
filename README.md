@@ -14,3 +14,10 @@
    ```
 ## API Link
 - https://url-shortener-1qp8.onrender.com/
+
+## Suggestions
+### Redis
+- Implement a cache manager for frequently accessed routes to reduce database load and improve response times by serving already fetched data.
+- Implement jwt blacklist system to support logout/token revoke.
+### Grafana
+- Implement Grafana into the project to visualize and monitor metrics
