@@ -1,6 +1,8 @@
 import { Type } from 'class-transformer';
-import { IsDateString, IsNumber, IsString, IsUrl, IsUUID } from 'class-validator';
+import { IsDateString, IsNumber, IsOptional, IsString, IsUrl, IsUUID, Min } from 'class-validator';
 import { UserDto } from 'src/user/dto/user.dto';
+import { ShortUrl } from '../shorturl.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ShorturlDto {
   @IsUUID()
@@ -23,4 +25,31 @@ export class ShorturlDto {
 
   @IsDateString()
   updatedAt: Date;
+}
+
+
+export class PaginatedShortUrlDto {
+  @ApiProperty({ type: [ShortUrl] })
+  data: ShortUrl[];
+
+  @ApiProperty()
+  total: number;
+
+  @ApiProperty()
+  page: number;
+
+  @ApiProperty()
+  limit: number;
+}
+
+export class PaginateDto {
+  @IsOptional()
+  @Type(() => Number)
+  @Min(1)
+  page: number = 1;
+
+  @IsOptional()
+  @Type(() => Number)
+  @Min(1)
+  limit: number = 10;
 }
