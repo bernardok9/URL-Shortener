@@ -1,5 +1,5 @@
 import { ShortUrl } from 'src/shorturl/shorturl.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -12,7 +12,15 @@ export class User {
   @Column()
   password: string;
 
-
   @OneToMany(() => ShortUrl, (shortUrl) => shortUrl.user)
-  shortUrls: ShortUrl[];
+  shortUrls?: ShortUrl[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }

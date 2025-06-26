@@ -33,14 +33,6 @@ export class ShorturlController {
     return this.shortUrlService.create(body.url, req.user);
   }
 
-  @ApiOperation({ summary: 'Redirect to page using shortcode; Example: IsSj5A' })
-  @ApiResponse({ status: 302, description: 'Redirect to original page' })
-  @Get(':shortCode')
-  async redirect(@Param('shortCode') shortCode: string, @Res() res: Response) {
-    const found = await this.shortUrlService.findByCode(shortCode);
-    return res.redirect(found.originalUrl);
-  }
-
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'List all logged user urls' })
@@ -64,5 +56,13 @@ export class ShorturlController {
   async deleteUrl(@Param('id') id: string, @Req() req): Promise<string> {
     await this.shortUrlService.softDelete(id, req.user);
     return 'Delete successful';
+  }
+
+  @ApiOperation({ summary: 'Redirect to page using shortcode; Example: IsSj5A' })
+  @ApiResponse({ status: 302, description: 'Redirect to original page' })
+  @Get(':shortCode')
+  async redirect(@Param('shortCode') shortCode: string, @Res() res: Response) {
+    const found = await this.shortUrlService.findByCode(shortCode);
+    return res.redirect(found.originalUrl);
   }
 }
