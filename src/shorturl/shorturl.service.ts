@@ -5,6 +5,7 @@ import { ShortUrl } from './shorturl.entity';
 import { User } from 'src/user/user.entity';
 import { InjectMetric } from '@willsoto/nestjs-prometheus';
 import { Counter, Histogram } from 'prom-client';
+import { PaginateDto } from './dto/shorturl.dto';
 
 
 @Injectable()
@@ -46,7 +47,7 @@ export class ShorturlService {
     // End prometheus Histogram timer;
     end();
     this.shortUrlCounter.inc();
-    
+
     return this.shortUrlRepo.save(shortUrl);
   }
 
@@ -59,13 +60,25 @@ export class ShorturlService {
     return found;
   }
 
-  async list(user: User): Promise<ShortUrl[]> {
-    const urls = await this.shortUrlRepo.find({
-      where: { user: { id: user.id }, deletedAt: IsNull() },
-      relations: ['user'],
-    });
-    return urls;
-  }
+async list(user: User, query: PaginateDto) {
+  const { page = 1, limit = 10 } = query;
+
+  const [data, total] = await this.shortUrlRepo.findAndCount({
+    where: { user: { id: user.id }, deletedAt: IsNull() },
+    relations: ['user'],
+    skip: (page - 1) * limit,
+    take: limit,
+  });
+
+  console.log('Pagination:', { page, limit });
+
+  return {
+    data,
+    total,
+    page,
+    lastPage: Math.ceil(total / limit),
+  };
+}
 
   async update(id: string, newUrl: string, user: User): Promise<ShortUrl> {
     const short = await this.shortUrlRepo.findOne({ where: { id, deletedAt: IsNull() }, relations: ['user'] });

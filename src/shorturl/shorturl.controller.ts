@@ -9,6 +9,7 @@ import {
   Patch,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ShorturlService } from './shorturl.service';
 import { Response } from 'express';
@@ -18,12 +19,14 @@ import { UpdateShorturlDto } from './dto/update-shorturl.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OptionalJwtAuthGuard } from 'src/auth/optional-jwt-auth.guard';
 import { ShortUrl } from './shorturl.entity';
+import { PaginatedShortUrlDto, PaginateDto } from './dto/shorturl.dto';
 
 @ApiTags('short urls')
 @Controller()
 export class ShorturlController {
   constructor(private readonly shortUrlService: ShorturlService) { }
 
+  @ApiBearerAuth()
   @UseGuards(OptionalJwtAuthGuard)
   @ApiBody({ type: CreateShorturlDto })
   @ApiOperation({ summary: 'Short a url' })
@@ -37,8 +40,8 @@ export class ShorturlController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'List all logged user urls' })
   @Get('url/list')
-  async listUrl(@Req() req): Promise<ShortUrl[]> {
-    return this.shortUrlService.list(req.user);
+  async listUrl(@Req() req, @Query() query: PaginateDto) {
+    return this.shortUrlService.list(req.user, query);
   }
 
   @ApiBearerAuth()
