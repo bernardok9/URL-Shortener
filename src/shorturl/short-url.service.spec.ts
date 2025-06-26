@@ -42,6 +42,14 @@ describe('ShorturlService', () => {
             softRemove: jest.fn(),
           },
         },
+        {
+          provide: 'PROM_METRIC_SHORTURL_CREATED_TOTAL',
+          useValue: mockCounter,
+        },
+        {
+          provide: 'PROM_METRIC_SHORTURL_EXECUTION_TIME',
+          useValue: mockHistogram,
+        },
       ],
     }).compile();
 

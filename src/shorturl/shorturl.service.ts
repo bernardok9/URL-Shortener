@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { ShortUrl } from './shorturl.entity';
 import { User } from 'src/user/user.entity';
+import { InjectMetric } from '@willsoto/nestjs-prometheus';
+import { Counter, Histogram } from 'prom-client';
 
 
 @Injectable()
@@ -10,6 +12,12 @@ export class ShorturlService {
   constructor(
     @InjectRepository(ShortUrl)
     private readonly shortUrlRepo: Repository<ShortUrl>,
+
+    @InjectMetric('shorturl_created_total')
+    private readonly shortUrlCounter: Counter,
+
+    @InjectMetric('shorturl_execution_time')
+    private readonly urlExecutionTime: Histogram
   ) { }
 
   private shortCodeGenerator(length = 6): string {
@@ -27,12 +35,18 @@ export class ShorturlService {
 
   async create(originalUrl: string, user?: User): Promise<ShortUrl> {
     let shortCode: string;
+    const end = this.urlExecutionTime.startTimer();
     // generate code until some is available
     do {
       shortCode = this.shortCodeGenerator();
     } while (await this.shortUrlRepo.findOne({ where: { shortCode } }));
 
     const shortUrl = this.shortUrlRepo.create({ originalUrl: originalUrl, shortCode: shortCode, user: user });
+
+    // End prometheus Histogram timer;
+    end();
+    this.shortUrlCounter.inc();
+    
     return this.shortUrlRepo.save(shortUrl);
   }
 
